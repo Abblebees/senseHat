@@ -27,6 +27,7 @@ def move_marble(pitch, roll, x, y):
             new_x -= 1
     if 181 < pitch < 359:
             new_x += 1
+    return new_x, new_y
 
 while game_over == False:
     o = sense.get_orientation()
@@ -37,4 +38,3 @@ while game_over == False:
     sense.set_pixels(sum(maze,[]))
     sleep(0.05)
     maze[y][x] = b
-    
