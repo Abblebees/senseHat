@@ -3,6 +3,7 @@ sense = SenseHat()
 sense.clear()
 from time import sleep
 
+g = (0,254,0)
 a = (0,110,90)
 b = (0,0,0)
 maze = [[a,a,a,a,a,a,b,a],
@@ -12,21 +13,35 @@ maze = [[a,a,a,a,a,a,b,a],
         [a,b,a,a,a,a,b,a],
         [a,a,a,b,b,a,b,a],
         [a,b,b,b,b,b,b,a],
-        [a,b,a,a,a,a,a,a]]
+        [a,g,a,a,a,a,a,a]]
 
 game_over = False
-
-MC = (254,254,254)
+w = (254,254,254)
 x = 6
 y = 0
 
+def check_wall(x,y,new_x,new_y):
+    if maze[new_y][new_x] != a:
+        return new_x, new_y
+    elif maze[new_y][x] != a:
+        return x, new_y
+    elif maze[y][new_x] != a:
+        return new_x, y
+    else:
+        return x,y
+    
 def move_marble(pitch, roll, x, y):
     new_x = x
     new_y = y
-    if 1 < pitch < 179:
+    if 1 < pitch < 179 and x != 0:
             new_x -= 1
-    if 181 < pitch < 359:
+    elif 181 < pitch < 359 and x != 7:
             new_x += 1
+    if 1 < roll < 179 and y != 7:
+        new_y += 1
+    elif 359 > roll > 179 and y != 0:
+        new_y -= 1
+    new_x, new_y = check_wall(x,y,new_x, new_y)
     return new_x, new_y
 
 while game_over == False:
@@ -34,7 +49,14 @@ while game_over == False:
     pitch = o["pitch"]
     roll = o["roll"]
     x,y = move_marble(pitch,roll,x,y)
-    maze[y][x] = MC
+    if maze[y][x] == g:
+        sense.show_message("YOU GOT THIS VICTORY ROYALE")
+        game_over = True
+    maze[y][x] = w
     sense.set_pixels(sum(maze,[]))
     sleep(0.05)
     maze[y][x] = b
+
+    
+
+
