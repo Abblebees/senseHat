@@ -3,17 +3,29 @@ sense = SenseHat()
 sense.clear()
 from time import sleep
 
+s = (0,0,0)
+y = (255,255,0)
+r = (204,0,0)
 g = (0,254,0)
 a = (0,110,90)
 b = (0,0,0)
-maze = [[a,a,a,a,a,a,b,a],
-        [a,b,b,a,b,b,b,a],
+maze = [[a,a,a,a,a,a,s,a],
+        [a,b,y,a,b,b,s,a],
         [a,b,a,a,b,a,a,a],
         [a,b,b,b,b,b,b,a],
         [a,b,a,a,a,a,b,a],
-        [a,a,a,b,b,a,b,a],
+        [a,a,a,b,b,a,r,a],
         [a,b,b,b,b,b,b,a],
         [a,g,a,a,a,a,a,a]]
+
+maze_non = [[a,a,a,a,a,a,b,a],
+            [a,b,y,a,b,b,b,a],
+            [a,b,a,a,b,a,a,a],
+            [a,b,b,b,b,b,b,a],
+            [a,b,a,a,a,a,b,a],
+            [a,a,a,b,b,a,b,a],
+            [a,b,b,b,b,b,b,a],
+            [a,g,a,a,a,a,a,a]]
 
 game_over = False
 w = (254,254,254)
@@ -29,7 +41,17 @@ def check_wall(x,y,new_x,new_y):
         return new_x, y
     else:
         return x,y
-    
+
+def check_gate(x,y,new_x,new_y):
+    if maze[new_y][new_x] != r:
+        return new_x, new_y
+    elif maze[new_y][x] != r:
+        return x, new_y
+    elif maze[y][new_x] != r:
+        return new_x, y
+    else:
+        return x,y
+
 def move_marble(pitch, roll, x, y):
     new_x = x
     new_y = y
@@ -42,6 +64,7 @@ def move_marble(pitch, roll, x, y):
     elif 359 > roll > 179 and y != 0:
         new_y -= 1
     new_x, new_y = check_wall(x,y,new_x, new_y)
+    new_x, new_y = check_gate(x,y,new_x, new_y)
     return new_x, new_y
 
 while game_over == False:
@@ -54,9 +77,7 @@ while game_over == False:
         game_over = True
     maze[y][x] = w
     sense.set_pixels(sum(maze,[]))
+    if maze[y][x] == y:
+        sense.set_pixels(sum(maze_non,[]))
     sleep(0.05)
     maze[y][x] = b
-
-    
-
-
