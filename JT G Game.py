@@ -4,13 +4,13 @@ sense.clear()
 from time import sleep
 
 s = (0,0,0)
-y = (255,255,0)
+T = (255,255,0)
 r = (204,0,0)
 g = (0,254,0)
 a = (0,110,90)
 b = (0,0,0)
 maze = [[a,a,a,a,a,a,s,a],
-        [a,b,y,a,b,b,s,a],
+        [a,b,T,a,b,b,s,a],
         [a,b,a,a,b,a,a,a],
         [a,b,b,b,b,b,b,a],
         [a,b,a,a,a,a,b,a],
@@ -19,7 +19,7 @@ maze = [[a,a,a,a,a,a,s,a],
         [a,g,a,a,a,a,a,a]]
 
 maze_non = [[a,a,a,a,a,a,b,a],
-            [a,b,y,a,b,b,b,a],
+            [a,b,T,a,b,b,b,a],
             [a,b,a,a,b,a,a,a],
             [a,b,b,b,b,b,b,a],
             [a,b,a,a,a,a,b,a],
@@ -67,6 +67,8 @@ def move_marble(pitch, roll, x, y):
     new_x, new_y = check_gate(x,y,new_x, new_y)
     return new_x, new_y
 
+most_recent_maze = maze
+
 while game_over == False:
     o = sense.get_orientation()
     pitch = o["pitch"]
@@ -76,8 +78,10 @@ while game_over == False:
         sense.show_message("YOU GOT THIS VICTORY ROYALE")
         game_over = True
     maze[y][x] = w
-    sense.set_pixels(sum(maze,[]))
-    if maze[y][x] == y:
-        sense.set_pixels(sum(maze_non,[]))
+    if maze[y][x] == T:
+        most_recent_maze = maze_non
+        sense.set_pixels(sum(most_recent,[]))
+    sense.set_pixels(sum(most_recent_maze,[]))
     sleep(0.05)
     maze[y][x] = b
+
